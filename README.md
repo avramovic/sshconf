@@ -46,7 +46,7 @@ sshconf edit [options] [--] <host>
 
 ### rm
 
-Remmove an existing SSH connection
+Remove an existing SSH connection
 
 ```
 sshconf rm <host>
