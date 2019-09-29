@@ -31,53 +31,24 @@ class SSHConf
 
         foreach ($sshConf as $line) {
             $line = trim($line);
+            if (empty($line)) {
+                continue;
+            }
 
             if (stripos($line, 'host ') === 0) {
                 $oldGroup = substr($line, 5);
                 if (!isset($data[$oldGroup])) {
                     $data[$oldGroup] = [];
                 }
+                continue;
             }
 
-            if (stripos($line, 'hostname ') === 0) {
-                $value = substr($line, 9);
+            $spacePos = strpos($line, ' ');
+            if ($spacePos !== false) {
+                $key   = strtolower(substr($line, 0, $spacePos));
+                $value = substr($line, $spacePos + 1);
                 if (isset($data[$oldGroup])) {
-                    $data[$oldGroup]['hostname'] = $value;
-                }
-            }
-
-            if (stripos($line, 'user ') === 0) {
-                $value = substr($line, 5);
-                if (isset($data[$oldGroup])) {
-                    $data[$oldGroup]['user'] = $value;
-                }
-            }
-
-            if (stripos($line, 'identityfile ') === 0) {
-                $value = substr($line, 13);
-                if (isset($data[$oldGroup])) {
-                    $data[$oldGroup]['identityfile'] = $value;
-                }
-            }
-
-            if (stripos($line, 'port ') === 0) {
-                $value = substr($line, 5);
-                if (isset($data[$oldGroup])) {
-                    $data[$oldGroup]['port'] = $value;
-                }
-            }
-
-            if (stripos($line, 'loglevel ') === 0) {
-                $value = substr($line, 9);
-                if (isset($data[$oldGroup])) {
-                    $data[$oldGroup]['loglevel'] = $value;
-                }
-            }
-
-            if (stripos($line, 'compression ') === 0) {
-                $value = substr($line, 12);
-                if (isset($data[$oldGroup])) {
-                    $data[$oldGroup]['compression'] = $value;
+                    $data[$oldGroup][$key] = $value;
                 }
             }
 
@@ -131,28 +102,12 @@ class SSHConf
         foreach ($this->sshConf as $host => $conf) {
             $text .= 'Host '.$host.PHP_EOL;
 
-            if (isset($conf['hostname'])) {
-                $text .= "\t".'HostName '.$conf['hostname'].PHP_EOL;
-            }
+            foreach ($conf as $key => $value) {
+                if (empty($value) && !is_numeric($value)) {
+                    continue;
+                }
 
-            if (isset($conf['port'])) {
-                $text .= "\t".'Port '.$conf['port'].PHP_EOL;
-            }
-
-            if (isset($conf['user'])) {
-                $text .= "\t".'User '.$conf['user'].PHP_EOL;
-            }
-
-            if (isset($conf['identityfile'])) {
-                $text .= "\t".'IdentityFile '.$conf['identityfile'].PHP_EOL;
-            }
-
-            if (isset($conf['loglevel'])) {
-                $text .= "\t".'LogLevel '.$conf['loglevel'].PHP_EOL;
-            }
-
-            if (isset($conf['compression'])) {
-                $text .= "\t".'Compression '.$conf['compression'].PHP_EOL;
+                $text .= "\t".ucfirst($key).' '.$value.PHP_EOL;
             }
 
             $text .= PHP_EOL;
