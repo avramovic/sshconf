@@ -2,7 +2,6 @@
 
 use SSHConf\SSHConf;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class BaseCommand extends Command
@@ -21,7 +20,6 @@ abstract class BaseCommand extends Command
     public function error($msg, $exitCode = 1)
     {
         $this->output->writeln(sprintf("<error>ERROR: %s</error>", $msg));
-        $this->output->writeln("");
 
         if (is_numeric($exitCode)) {
             exit((int)$exitCode);
@@ -31,7 +29,6 @@ abstract class BaseCommand extends Command
     public function info($msg)
     {
         $this->output->writeln(sprintf("<fg=green>%s</>", $msg));
-        $this->output->writeln("");
     }
 
     public function appName(OutputInterface &$output)

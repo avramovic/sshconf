@@ -1,5 +1,6 @@
 <?php namespace Commands;
 
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,8 +22,8 @@ class EditHostCommand extends BaseCommand
                     new InputOption('user', 'u', InputOption::VALUE_REQUIRED),
                     new InputOption('port', 'p', InputOption::VALUE_REQUIRED),
                     new InputOption('identityfile', 'i', InputOption::VALUE_REQUIRED),
-                    new InputOption('loglevel', 'l', InputOption::VALUE_REQUIRED),
-                    new InputOption('compression', 'c', InputOption::VALUE_REQUIRED),
+                    new InputOption('extra', 'e', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY),
+                    new InputOption('value', 'a', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY),
                 ])
             );
     }
@@ -37,27 +38,36 @@ class EditHostCommand extends BaseCommand
         $user         = $input->getOption('user');
         $port         = $input->getOption('port');
         $identityfile = $input->getOption('identityfile');
-        $loglevel     = $input->getOption('loglevel');
-        $compression  = $input->getOption('compression');
+        $extras       = $input->getOption('extra');
+        $values       = $input->getOption('value');
+
+        if (count($extras) != count($values)) {
+            $this->error('Number of extras and values must be equal!');
+        }
 
         if (!$this->sshConf->has($host)) {
             $this->error('SSH entry "'.$host.'" does not exist, please use: sshconf add or sshconf ls');
         }
 
-        if (is_null($hostname) && is_null($port) && is_null($name) && is_null($user) && is_null($identityfile) && is_null($loglevel) && is_null($compression)) {
+        if (is_null($hostname) && is_null($port) && is_null($name) && is_null($user) && is_null($identityfile) && empty($extras) && empty($values)) {
             $this->error('Please specify at least one option to modify!');
         }
+
+        $data = [];
+
+        $old = $this->sshConf->get($host);
 
         if (!is_null($name)) {
             if (empty($name)) {
                 $this->error("You can't rename a SSH connection without a new name!");
             }
 
-            $tmp = $this->sshConf->get($host);
-            $this->sshConf->put($name, $tmp)->remove($host);
-            $output->writeln('Renamed '.$host.' to: '.$name);
+            $data[] = ['HOST', $host, $name];
+
+            $this->sshConf->put($name, $old)->remove($host);
             $host = $name;
         }
+
 
 
         if (!is_null($hostname)) {
@@ -67,65 +77,73 @@ class EditHostCommand extends BaseCommand
             }
 
             $this->sshConf->setValue($host, 'hostname', $hostname);
-            $output->writeln('Updated HostName: '.$hostname);
+
+            $data[] = ['HOSTNAME', $old['hostname'], $hostname];
         }
 
         if (!is_null($port)) {
             if ($port == '') {
                 $this->sshConf->setValue($host, 'port', null);
-                $output->writeln('Removed Port');
             } else {
                 $this->sshConf->setValue($host, 'port', $port);
-                $output->writeln('Updated Port: '.$port);
             }
+
+            $data[] = ['HOSTNAME', $old['port'] ?? '<options=bold>NULL</>', empty($port) ? '<options=bold>NULL</>' : $port];
+
         }
 
         if (!is_null($user)) {
             if ($user == '') {
                 $this->sshConf->setValue($host, 'user', null);
-                $output->writeln('Removed User');
             } else {
                 $this->sshConf->setValue($host, 'user', $user);
-                $output->writeln('Updated User: '.$user);
             }
+
+
+            $data[] = ['USER', $old['user'] ?? '<options=bold>NULL</>', empty($user) ? '<options=bold>NULL</>' : $user];
+
         }
 
         if (!is_null($identityfile)) {
             if ($identityfile == '') {
                 $this->sshConf->setValue($host, 'identityfile', null);
-                $output->writeln('Removed IdentityFile');
             } else {
-                $identityfile = realpath($identityfile) ? realpath($identityfile) : $identityfile;
                 $this->sshConf->setValue($host, 'identityfile', $identityfile);
-                $output->writeln('Updated IdentityFile: '.$identityfile);
             }
+
+            $data[] = ['IDENTITYFILE', $old['identityfile'] ?? '<options=bold>NULL</>', empty($identityfile) ? '<options=bold>NULL</>' : $identityfile];
+
         }
 
-        if (!is_null($loglevel)) {
-            if ($loglevel == '') {
-                $this->sshConf->setValue($host, 'loglevel', null);
-                $output->writeln('Removed LogLevel');
-            } else {
-                $this->sshConf->setValue($host, 'loglevel', $loglevel);
-                $output->writeln('Updated LogLevel: '.$loglevel);
+        foreach ($extras as $key => $extra) {
+            $value = $values[$key] ?? null;
 
+            if (!is_null($value)) {
+                if ($value == '') {
+                    $this->sshConf->setValue($host, $extra, null);
+                } else {
+                    $this->sshConf->setValue($host, $extra, $value);
+                }
             }
-        }
 
-        if (!is_null($compression)) {
-            if ($compression == '') {
-                $this->sshConf->setValue($host, 'compression', null);
-                $output->writeln('Removed Compression');
-            } else {
-                $this->sshConf->setValue($host, 'compression', $compression);
-                $output->writeln('Updated Compression');
-            }
-        }
+            $data[] = [strtoupper($extra), $old[strtolower($extra)] ?? '<options=bold>NULL</>', empty($value) ? '<options=bold>NULL</>' : $value];
 
-        $output->writeln('');
+        }
 
         $this->sshConf->save();
 
+        $table = new Table($output);
+
+        $table
+            ->setHeaders(['Option', 'Old value', 'New value'])
+            ->setRows($data);
+
+        $table
+            ->setHeaderTitle('SSH: '.$host)
+            ->setFooterTitle('Total: '.count($data))
+            ->render();
+
+        $output->writeln('');
         $this->info(sprintf('Successfully edited "%s" SSH connection.', $host));
     }
 }
