@@ -49,11 +49,18 @@ Edit an existing SSH connection
 sshconf edit [options] [--] <host>
 ```
 
-
 ### rm
 
 Remove an existing SSH connection
 
 ```
 sshconf rm <host>
+```
+
+### view
+
+View an existing SSH connection
+
+```
+sshconf view <host>
 ```
