@@ -11,7 +11,7 @@ use Commands\RemoveHostCommand;
 use Commands\ViewHostCommand;
 use Symfony\Component\Console\Application;
 
-$application = new Application("sshconf", "0.2");
+$application = new Application("sshconf", "0.3");
 
 $application->add(new AddHostCommand());
 $application->add(new EditHostCommand());

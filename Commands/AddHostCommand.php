@@ -18,11 +18,11 @@ class AddHostCommand extends BaseCommand
                 new InputDefinition([
                     new InputArgument('host', InputArgument::REQUIRED),
                     new InputArgument('hostname',InputArgument::REQUIRED),
-                    new InputOption('user', 'u', InputOption::VALUE_REQUIRED),
-                    new InputOption('port', 'p', InputOption::VALUE_REQUIRED),
-                    new InputOption('identityfile', 'i', InputOption::VALUE_REQUIRED),
-                    new InputOption('extra', 'e', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY),
-                    new InputOption('value', 'a', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY),
+                    new InputOption('user', 'U', InputOption::VALUE_REQUIRED),
+                    new InputOption('port', 'P', InputOption::VALUE_REQUIRED),
+                    new InputOption('identityfile', 'I', InputOption::VALUE_REQUIRED),
+                    new InputOption('extra', 'E', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY),
+                    new InputOption('value', 'A', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY),
                 ])
             );
     }
