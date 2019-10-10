@@ -1,3 +1,4 @@
 {
-    "main": "sshconf.php"
+    "main": "sshconf.php",
+    "output": "build/sshconf.phar"
 }
