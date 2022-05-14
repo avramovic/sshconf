@@ -27,7 +27,7 @@ This will download and copy the executable in `/usr/local/bin/sshconf` and will 
 
 ### connect
 
-Connect to a ssh connecction
+Connect to a ssh connection. This is the default command since v0.4
 
 ```
 sshconf connect
