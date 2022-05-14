@@ -2,14 +2,14 @@
 
 use SSHConf\SSHConf;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class BaseCommand extends Command
 {
     protected static $defaultName = null;
-    protected $sshConf;
-    /** @var  OutputInterface */
-    protected $output;
+    protected SSHConf $sshConf;
+    protected OutputInterface $output;
 
     public function __construct()
     {
@@ -41,5 +41,12 @@ abstract class BaseCommand extends Command
     public function setOutput(&$output)
     {
         $this->output = $output;
+    }
+
+    public function runCommand(string $cmd, ?array $args = [])
+    {
+        $command = $this->getApplication()->find($cmd);
+
+        return $command->run(new ArrayInput($args), $this->output);
     }
 }

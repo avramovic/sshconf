@@ -46,5 +46,7 @@ class ViewHostCommand extends BaseCommand
             ->setHeaderTitle('SSH: '.$host)
             ->setFooterTitle('Total: '.count($data))
             ->render();
+
+        return 0;
     }
 }

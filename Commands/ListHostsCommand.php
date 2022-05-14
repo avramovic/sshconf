@@ -20,7 +20,7 @@ class ListHostsCommand extends BaseCommand
         $data = [];
 
         foreach ($this->sshConf->all() as $host => $conf) {
-            $data[] = [$host, $conf['hostname'] . ($conf['port'] ? ':'.$conf['port'] : ''), $conf['user'] ?? get_current_user()];
+            $data[] = [$host, $conf['hostname'] . (isset($conf['port']) ? ':'.$conf['port'] : ''), $conf['user'] ?? get_current_user()];
         }
 
         $table = new Table($output);
@@ -34,5 +34,7 @@ class ListHostsCommand extends BaseCommand
             ->setHeaderTitle('SSH connections')
             ->setFooterTitle('Total: '.count($this->sshConf->all()))
             ->render();
+
+        return 0;
     }
 }

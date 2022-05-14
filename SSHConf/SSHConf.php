@@ -2,13 +2,8 @@
 
 class SSHConf
 {
-
-
-    /**
-     * @var null
-     */
-    protected $sshConfFile;
-    public $sshConf = [];
+    protected string $sshConfFile;
+    protected array $sshConf = [];
 
     public function __construct($sshConfFile = null)
     {
@@ -92,6 +87,11 @@ class SSHConf
     public function all()
     {
         return $this->sshConf;
+    }
+
+    public function count()
+    {
+        return count($this->sshConf);
     }
 
     public function dump()

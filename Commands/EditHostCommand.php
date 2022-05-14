@@ -145,5 +145,7 @@ class EditHostCommand extends BaseCommand
 
         $output->writeln('');
         $this->info(sprintf('Successfully edited "%s" SSH connection.', $host));
+
+        return 0;
     }
 }

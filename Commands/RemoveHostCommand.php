@@ -32,5 +32,7 @@ class RemoveHostCommand extends BaseCommand
         $this->sshConf->remove($host)->save();
 
         $this->info(sprintf('Successfully removed "%s" SSH connection.', $host));
+
+        return 0;
     }
 }

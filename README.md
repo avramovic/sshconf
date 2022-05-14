@@ -5,7 +5,7 @@ Small CLI utility to manage ssh config file on Linux/Mac
 ## Requirements
 
 * wget or cURL
-* PHP 7.1
+* PHP 8.0
 
 ## Installation
 
