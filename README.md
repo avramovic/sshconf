@@ -25,6 +25,13 @@ This will download and copy the executable in `/usr/local/bin/sshconf` and will 
 
 ## Commands
 
+### connect
+
+Connect to a ssh connecction
+
+```
+sshconf connect
+```
 ### ls
 
 List all connections
