@@ -51,7 +51,7 @@ class AddHostCommand extends BaseCommand
             'hostname' => $hostname,
         ];
 
-        if (!empty($port)) {
+        if (!empty($user)) {
             $conf['user'] = $user;
         }
 
@@ -95,5 +95,7 @@ class AddHostCommand extends BaseCommand
 
         $output->writeln('');
         $this->info(sprintf('Successfully created new "%s" SSH connection.', $host));
+
+        return 0;
     }
 }
